@@ -1,7 +1,7 @@
-alert("some alert");
+
 
 function aler(){
-	alert("Submitted");
+	
 	
 }
 var likes=0;
