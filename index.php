@@ -80,11 +80,11 @@ if (!$conn) {
   <div class="container mt-5" >
     <div class="d-flex justify-content-between flex-column flex-md-row mb-3">
           <h3 class=""> Questions</h3> 
-          <form class="form-inline my-2 my-lg-0 float-right" action="new-question.php">
-          <input class="form-control " type="text" placeholder="Search " aria-label="Search" style="width: 50%">
+          <form class="form-inline my-2 my-lg-0 float-right" action="index.php" method="POST">
+          <input class="form-control " type="text" placeholder="Search " aria-label="Search" style="width: 50%" name="search">
           <button class="btn btn-primary mr-2"><i class="fas fa-search "></i></button>
        
-          <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Ask Questions</button>
+          <a class="btn btn-outline-primary my-2 my-sm-0" href="new-question.php">Ask Questions</a>
          
         </form>
         
@@ -92,11 +92,32 @@ if (!$conn) {
      
 
       <?php  
+      if (isset($_POST['search'])){
+      $search=$_POST['search'];
+      
+      }
+      else
+      {
+        $search="";
+      }
+
+
        $sql="Select * from questions";
      $result=mysqli_query($conn,$sql);
 
 // Associative array
 while($row=mysqli_fetch_assoc($result)){
+
+      if($search!="")
+      {
+        
+        $pos=stripos($row['Title'], $search);
+        
+          if($pos!==false)
+          {
+
+
+       
 
        ?>
         <div class="card mb-4 shadow-sm">
@@ -114,16 +135,45 @@ while($row=mysqli_fetch_assoc($result)){
                  echo "<span class='badge badge-primary mr-2'>".$i."</span>";
                }
               ?>
-          <!--  <span class="badge badge-primary">Git</span>
-           <span class="badge badge-primary">Github</span>
-           <span class="badge badge-primary">Vcs</span> -->
+         
            <div class="mt-3"><a href="#" class="card-link">Mohd Shamoon</a> asked on <?php echo $row['created_at']; ?> </div>
-            <div class="mt-3"><i class="far fa-thumbs-up mr-1">14 &nbsp</i><i class="far fa-thumbs-down"></i>18 &nbsp<i class="far fa-comments pl-1"> 18 Answers</i></div>
+            <div class="mt-3"><i class="far fa-thumbs-up mr-1"><?php echo $row['likes']; ?> </i><i class="far fa-thumbs-down mr-2"></i>18 <i class="far fa-comments pl-1"> 18 Answers</i></div>
              </div>
         
          </div>
 
        <?php
+          }
+      }
+
+      else{
+         ?>
+
+          <div class="card mb-4 shadow-sm">
+          <div class="card-body">
+        
+           <h5><a href="answers.php?title=<?php  echo $row['id']; ?>" class="text-dark">
+            <?php  echo $row['Title']; ?></a></h5>
+             <span style="color: #666"> <?php  echo $row['Description']; ?></span>
+
+              <br>
+
+
+              <?php $tags=explode(',',$row['Tags']);
+               foreach ( $tags as $i) {
+                 echo "<span class='badge badge-primary mr-2'>".$i."</span>";
+               }
+              ?>
+          <!--  <span class="badge badge-primary">Git</span>
+           <span class="badge badge-primary">Github</span>
+           <span class="badge badge-primary">Vcs</span> -->
+            <div class="mt-3"><a href="#" class="card-link">Mohd Shamoon</a> asked on <?php echo $row['created_at']; ?> </div>
+            <div class="mt-3"><i class="far fa-thumbs-up mr-3"><?php echo $row['likes']; ?> </i><i class="far fa-thumbs-down mr-2"><?php echo $row['dislikes']; ?></i>  <i class="far fa-comments pl-1"> 18 Answers</i></div>
+             </div>
+         </div>
+
+<?php
+      }
 
        }
       ?>

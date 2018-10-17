@@ -18,7 +18,7 @@ $description=$_POST['description'];
 $tags=$_POST['tag'];
 $timestamp=time();
 $create=date("F d, Y",$timestamp);
-$sql = "INSERT INTO questions VALUES ('$title', '$description',' $tags','$create','15 october')";
+$sql = "INSERT INTO questions(Title,Description,Tags,created_at,updated_at) VALUES ('$title', '$description','$tags','$create','15 october')";
 
 if (mysqli_query($conn, $sql)) {
    

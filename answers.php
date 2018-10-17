@@ -1,3 +1,41 @@
+<?php
+
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname="codetrek_forum";
+
+// Create connection
+$conn = mysqli_connect($servername, $username, $password,$dbname);
+
+if(isset($_POST['answer'])){
+$question=$_GET['title'];
+$answer=$_POST['answer'];
+
+$sql = "INSERT INTO answers(question_id,answer_text,created_at,updated_at) VALUES ($question, '$answer',NOW(),NOW())";
+
+if (mysqli_query($conn, $sql)) {
+   
+} else {
+    echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+}
+
+
+   
+
+
+
+
+}
+$question=$_GET['title'];
+$sql1="SELECT * from answers WHERE question_id=$question";
+$result1=mysqli_query($conn, $sql1);
+// Check connection
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+?>
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -20,7 +58,7 @@
 
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
           <div class="container">
-      <a class="navbar-brand " href="#" >CODETREK FORUM </a>
+      <a class="navbar-brand " href="index.php" >CODETREK FORUM </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -59,18 +97,34 @@
       </div>
     </nav>
 
+    <?php  if(isset($_POST['answer'])){
+      ?>
+      <div class="alert alert-success text-center" role="alert">
+  <strong>Success!</strong> You answer has been posted successfully.
+</div>
+        <?php }
+        ?>
 
+<?php
+$id=$_GET['title'];
+$sql="SELECT * from questions WHERE id=$id";
+$result=mysqli_query($conn,$sql);
+
+$row=mysqli_fetch_assoc($result);
+?>
 
      <div class="container mt-5" >
-          <h3>How do i use Git and Github?</h3> 
+          <h3> <?php  echo $row['Title']; ?></h3> 
           <p class="text-secondary">
 
-            A paragraph is a self-contained unit of a discourse in writing dealing with a particular point or idea. A paragraph consists of one or more sentences. Though not required by the syntax of any language, paragraphs are usually an expected part of formal writing, used to organize longer prose.
+            <?php  echo $row['Description']; ?>
           </p>
 
-           <span class="badge badge-primary">Git</span>
-           <span class="badge badge-primary">Github</span>
-           <span class="badge badge-primary">Vcs</span>
+            <?php $tags=explode(',',$row['Tags']);
+               foreach ( $tags as $i) {
+                 echo "<span class='badge badge-primary mr-2'>".$i."</span>";
+               }
+              ?>
            <div class="mt-3"><span style="color: blue">Mohd Shamoon</span> asked on September 27,2018</div>
             <div class="mt-3">
               <span id="likes" >
@@ -79,51 +133,42 @@
               <span class="ml-2" id="dislikes">
               <i class="far fa-thumbs-down" onclick="dislike()" id="dislikes-no">18</i> </span>
               <span class="ml-2">
-              <i class="far fa-comments pl-1"> 18 Answers</i></span>
+              <i class="far fa-comments pl-1"> <?php echo mysqli_num_rows($result1);?> Answers</i></span>
             </div>
 
         
-
+<?php while($row1=mysqli_fetch_assoc($result1)){  ?>
          <div class="card shadow-sm mt-5">
           
-         <div class="card-body" >
-           <div class="my-3 d-flex flex-wrap align-content-start"><span class="mr-auto"><a href="#" class="card-link">Ritik Kumar &nbsp</a> asked on September 27,2018 </span> <span class="badge badge-success badge-pill "><i class="fa fa-check" aria-hidden="true"></i>Correct Answer</span></div>
+         <div class="card-body my-3" >
+           <div class="mb-3 d-flex flex-wrap align-content-start"><span class="mr-auto"><a href="#" class="card-link">Ritik Kumar</a> <span class="text-secondary"> answered on September 27,2018</span> </span> <span class="badge badge-success badge-pill "><i class="fa fa-check" aria-hidden="true"></i>Correct Answer</span></div>
 
-           <span style="color: #666">A paragraph is a self-contained unit of a discourse in writing dealing with a particular point or idea. A paragraph consists of one or more sentences. Though not required by the syntax of any language, paragraphs are usually an expected part of formal writing, used to organize longer prose.
+           <span ><?php echo $row1['answer_text']; ?>
              <br>
          
           
           
         </div>
          </div>
+       <?php }  ?>
 
 
-         <div class="card shadow-sm mt-4">
-          
-         <div class="card-body" >
-           <div class="my-3"><a href="#" class="card-link">Ritik Kumar</a>  asked on September 27,2018</div>
-           <span style="color: #666">A paragraph is a self-contained unit of a discourse in writing dealing with a particular point or idea. A paragraph consists of one or more sentences. Though not required by the syntax of any language, paragraphs are usually an expected part of formal writing, used to organize longer prose.
-             <br>
-         
-          
-          
-        </div>
-         </div>
+       
 
            <div class="card shadow-sm my-4">
           
          <div class="card-body p-4" >
           
-<form>
+<form action="answers.php?title=<?php  echo $row['id']; ?>" method="POST">
  
 
    <div class="form-group">
    <h3>Your Answer</h3>
-   <textarea class="form-control" id="exampleFormControlTextarea1" rows="7" ></textarea>
+   <textarea class="form-control" id="exampleFormControlTextarea1" rows="7" name="answer"></textarea>
   </div>
 
  
-          <button type="button" onclick="aler()" class="btn btn-primary mt-3">Post your answer</button>
+          <button type="submit" onclick="aler()" class="btn btn-primary mt-3" >Post your answer</button>
 
   </div>
 
